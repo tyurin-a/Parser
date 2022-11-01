@@ -11,7 +11,7 @@ from openpyxl.chart.label import DataLabelList
 start_year = '1990'
 end_year = '2019'
 file_to_parse = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
-resources = ['Coal and coal products', 'Oil products', 'Natural gas', 'Electricity',  'Heat']
+resources = ['Coal and coal products', 'Oil products', 'Natural gas', 'Biofuels and waste', 'Electricity',  'Heat']
 
 def parser_flow():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
@@ -36,7 +36,7 @@ def parser_flow():
                             if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
     # Запись данных
     country = df.loc[df['PRODUCT'] == resources[0], 'COUNTRY']  # Отбор нужных столбцов
-    for i in range(0, 5, 1):
+    for i in range(0, 6, 1):
         df1 = df[(df['PRODUCT'] == resources[i])]
         # Фильтрация данных
         for k in trange(int(start_year), int(end_year) + 1, 1):
@@ -87,7 +87,7 @@ def remove_symb():
                             if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
     for k in dfs:
         df = dfs[k]  # Получаем лист из словаря dfs
-        for i in range(0, 5, 1):
+        for i in range(0, 6, 1):
             df.loc[df[resources[i]] == 'x', resources[i]] = 0
             df.loc[df[resources[i]] == '..', resources[i]] = 0
         # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
@@ -132,9 +132,9 @@ def parser_va():
         # writer.sheets = dict((ws.title, ws) for ws in book.worksheets)  # ExcelWriter использует эту переменную для доступа к листу.
         # # Если оставить ее пустой, он не будет знать, что лист уже существует, и создаст новый лист.
 
-        country.to_excel(writer, sheet_name=str(k), index=False, startcol=10)  # Записываем датафрейм в файл.
+        country.to_excel(writer, sheet_name=str(k), index=False, startcol=11)  # Записываем датафрейм в файл.
         # sheet_name='2019' показывает, в какой лист записываем.
-        data.to_excel(writer, sheet_name=str(k), index=False, startcol=11)  # Записываем датафрейм в файл.
+        data.to_excel(writer, sheet_name=str(k), index=False, startcol=12)  # Записываем датафрейм в файл.
         # index=False отключает запись индексов, startcol=1 начианет запись с 1 стобца (нумерация с нуля).
     writer.save()  # Сохраняем результат
 
@@ -163,11 +163,12 @@ def useful_cons():
     for k in dfs:
         df = dfs[k]  # Получаем лист из словаря dfs
         df['Useful consumption'] = ((df['Electricity'] + df['Natural gas'] + df['Coal and coal products']) * 0.35 +
+                                    df['Biofuels and waste'] * 0.25 +
                                     (df['Oil products'] + df['Heat']) * 0.9)
         df1 = df['Useful consumption']
         # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
         # print(df.keys())  # Печатаем названия первичных ключей (названия столбцов) в данном датафрейме
-        df1.to_excel(writer, sheet_name=str(k), index=False, startcol=6)  # Записываем датафрейм в файл.
+        df1.to_excel(writer, sheet_name=str(k), index=False, startcol=7)  # Записываем датафрейм в файл.
     # index=False отключает запись индексов, startcol=1 начианет запись с 1 стобца (нумерация с нуля).
     writer.save()  # Сохраняем результат
 
@@ -211,7 +212,7 @@ def change_keys():
         table2.drop(['TableIEA'], axis='columns', inplace=True)  # Удаляем лишний столбец
         # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
         # print(df.keys())  # Печатаем названия первичных ключей (названия столбцов) в данном датафрейме
-        table2.to_excel(writer, sheet_name=str(k), index=False, startcol=10)
+        table2.to_excel(writer, sheet_name=str(k), index=False, startcol=11)
     # index=False отключает запись индексов, startcol=1 начианет запись с 1 стобца (нумерация с нуля).
     writer.save()  # Сохраняем результат
 
