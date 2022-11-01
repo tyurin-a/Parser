@@ -25,12 +25,12 @@ def parser_flow():
 
     # print(df.keys()) # Печатаем названия первичных ключей (названия столбцов) в данном датафрейме
 
-    if os.path.exists(file_to_parse):  # Проверяем, есть ли файл, чтобы задать нужные параметры для записи
-        mode = "a"
-        if_sheet_exists = "overlay"
-    else:
-        mode = "w"
-        if_sheet_exists = None
+    # if os.path.exists(file_to_parse):  # Проверяем, есть ли файл, чтобы задать нужные параметры для записи
+    #     mode = "a"
+    #     if_sheet_exists = "overlay"
+    # else:
+    mode = "w"
+    if_sheet_exists = None
     # mode = "a" if os.path.exists(file_to_parse) else "w"
     writer = pd.ExcelWriter(file_to_parse, mode=mode, engine='openpyxl',
                             if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
