@@ -1,9 +1,12 @@
 # Импорт библиотек
 import os.path
 import pandas as pd
+from tqdm import trange
 import numpy as np
 import openpyxl
 from openpyxl import load_workbook
+from openpyxl.chart import Reference, BarChart, LineChart, Series
+from openpyxl.chart.label import DataLabelList
 
 start_year = '1990'
 end_year = '2019'
@@ -12,7 +15,7 @@ resources = ['Coal and coal products', 'Oil products', 'Natural gas', 'Electrici
 
 def parser_flow():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
-    file = r'C:\Users\Артем\Desktop\Tw.xlsx'
+    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\Industry\Industry IEA.xlsx'
 
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
@@ -36,7 +39,7 @@ def parser_flow():
     for i in range(0, 5, 1):
         df1 = df[(df['PRODUCT'] == resources[i])]
         # Фильтрация данных
-        for k in range(int(start_year), int(end_year) + 1, 1):
+        for k in trange(int(start_year), int(end_year) + 1, 1):
             data = (df1[str(k)])  # Отбор нужных столбцов
             data.name = resources[i]  # Переименовываем столбец (rename не работает, т.к. здесь он всего один)
             # Запись в новый Excel-файл
@@ -61,6 +64,7 @@ def parser_flow():
     # wb.save(file_to_parse)  # Сохранили файл с изменениями (удаленная страница)
 
 parser_flow()
+print('1 таблица выгружена')
 
 def remove_symb():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
@@ -93,11 +97,12 @@ def remove_symb():
     writer.save()  # Сохраняем результат
 
 remove_symb()
+print('Нечисловые символы в таблице удалены')
 
 def parser_va():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
 
-    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\Industry (include construction) value added WB.xlsx'
+    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\Industry\Industry (include construction) value added WB.xlsx'
 
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
@@ -119,7 +124,7 @@ def parser_va():
     writer = pd.ExcelWriter(file_to_parse, mode=mode, engine='openpyxl',
                             if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
 
-    for k in range(int(start_year), int(end_year) + 1, 1):
+    for k in trange(int(start_year), int(end_year) + 1, 1):
         data = (df[str(k)])  # Отбор нужных столбцов
         data.name = 'Value added'  # Переименовываем столбец (rename не работает, т.к. здесь он всего один)
         # # Запись в новый Excel-файл
@@ -135,6 +140,7 @@ def parser_va():
     writer.save()  # Сохраняем результат
 
 parser_va()
+print('2 таблица (value added) выгружена')
 
 def useful_cons():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
@@ -167,14 +173,9 @@ def useful_cons():
     writer.save()  # Сохраняем результат
 
 useful_cons()
+print('Полезное энергопотребление посчитано')
 
 def change_keys():
-    # Импорт библиотек
-    import os.path
-    import pandas as pd
-    import openpyxl
-    from openpyxl import load_workbook
-
     file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
@@ -216,6 +217,7 @@ def change_keys():
     writer.save()  # Сохраняем результат
 
 change_keys()
+print('Ключи двух таблиц приведены в соответствие')
 
 def vlookup():
     file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
@@ -249,6 +251,7 @@ def vlookup():
     writer.save()  # Сохраняем результат
 
 vlookup()
+print('Объединение таблиц выполнено')
 
 def specific_en_cons():
     file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
@@ -273,6 +276,7 @@ def specific_en_cons():
     writer.save()  # Сохраняем результат
 
 specific_en_cons()
+print('Удельное полезное энергопотребление посчитано')
 
 def total():
     file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
@@ -310,6 +314,7 @@ def total():
     writer.save()  # Сохраняем результат
 
 total()
+print('Общий лист сформирован')
 
 def normalize():
     file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
@@ -340,7 +345,7 @@ def normalize():
                      startcol=33)  # Записываем столбец стран для нормированной таблицы.
 
     # Нормируем таблицу на максимальное значение
-    for i in range(0, 160):
+    for i in trange(0, 160):
         val = df2.iloc[i]  # Выбираем строку значений из df2
         max_val = df1.iloc[i]  # Выбираем строку значений из df1 (максимальное значение)
         df2.iloc[i] = val / max_val
@@ -349,8 +354,34 @@ def normalize():
     writer.save()  # Сохраняем результат
 
 normalize()
+print('Значения в общем листе отнормированы')
 
+def plot():
+    file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
 
+    df = openpyxl.load_workbook(file)  # Читаем файл
+    sheet = df['Total']  # Выбираем нужный лист
+
+    chart = LineChart()  # Создаем объект LineChart
+
+    # countries = Reference(sheet, min_col=34, max_col=34, min_row=2, max_row=159)
+    years = Reference(sheet, min_col=35, max_col=64, min_row=1,
+                      max_row=1)  # Подаем список годов, по которому будет определяться ось х на графике
+    # data = Reference(sheet, min_col=35, max_col=64, min_row=2, max_row=159)
+    # Записываем легенду графика, а также определяем данные, по которым строится сам график
+    for i in range(2, 160):
+        chart.series.append(
+            Series(Reference(sheet, min_col=35, max_col=64, min_row=i, max_row=i), title=sheet.cell(i, 34).value))
+    # chart.add_data(data, from_rows=True)
+    chart.set_categories(years)  # Указываем, какой должна быть ось х на графике
+    chart.width = 30  # Ширина и высота графика (в см)
+    chart.height = 10
+
+    sheet.add_chart(chart, "E5")  # Добавляем график на лист в переменной sheet с левым верхним углом в ячейке Е5
+    df.save(file)
+
+plot()
+print('Общий график (без разбиения стран на группы) построен')
 
 
 
