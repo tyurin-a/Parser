@@ -10,12 +10,12 @@ from openpyxl.chart.label import DataLabelList
 
 start_year = '1990'
 end_year = '2019'
-file_to_parse = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+file_to_parse = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
 resources = ['Coal and coal products', 'Oil products', 'Natural gas', 'Electricity',  'Heat']
 
 def parser_flow():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
-    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\Resident\Resident IEA.xlsx'
+    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\Industry\Industry IEA.xlsx'
 
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
@@ -68,7 +68,7 @@ print('1 таблица выгружена')
 
 def remove_symb():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
-    file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+    file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
     dfs = {
@@ -102,7 +102,8 @@ print('Нечисловые символы в таблице удалены')
 def parser_va():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
 
-    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\Resident\Population total WB.xlsx'
+    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\Industry\Industry (include construction) value added WB.xlsx'
+
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
 
@@ -125,7 +126,7 @@ def parser_va():
 
     for k in trange(int(start_year), int(end_year) + 1, 1):
         data = (df[str(k)])  # Отбор нужных столбцов
-        data.name = 'Population'  # Переименовываем столбец (rename не работает, т.к. здесь он всего один)
+        data.name = 'Value added'  # Переименовываем столбец (rename не работает, т.к. здесь он всего один)
         # # Запись в новый Excel-файл
         # book = load_workbook(file_to_parse)  # Получаем доступ к файлу MS Excel в который будем записывать датафрейм
         # writer.book = book  # Сохраняем предыдущую информацию файла, чтобы при записи она осталась
@@ -139,11 +140,11 @@ def parser_va():
     writer.save()  # Сохраняем результат
 
 parser_va()
-print('2 таблица (population) выгружена')
+print('2 таблица (value added) выгружена')
 
 def useful_cons():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
-    file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+    file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
     dfs = {
@@ -175,7 +176,7 @@ useful_cons()
 print('Полезное энергопотребление посчитано')
 
 def change_keys():
-    file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+    file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
     dfs = {
@@ -201,7 +202,7 @@ def change_keys():
     cn = pd.DataFrame(list(country_dict.items()), columns=['TableWB', 'TableIEA'])  # Создаем датафрейм из словаря
     for k in dfs:
         df = dfs[k]  # Получаем лист из словаря dfs
-        table2 = df.loc[:, 'Country Name':'Population']
+        table2 = df.loc[:, 'Country Name':'Value added']
         table2 = pd.merge(table2, cn, left_on=['Country Name'], right_on=['TableWB'],
                           how='left')  # Аналог ВПР для таблицы 2,
         # в которой будем менять ключи для адекватного соединения с 1ой таблицей с помощью сравнительной таблицы cn
@@ -219,7 +220,7 @@ change_keys()
 print('Ключи двух таблиц приведены в соответствие')
 
 def vlookup():
-    file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+    file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
     dfs = {
@@ -240,7 +241,7 @@ def vlookup():
     for k in dfs:
         df = dfs[k]  # Получаем лист из словаря dfs
         table1 = df.loc[:, 'COUNTRY':'Useful consumption']  # Создаем датафреймы из двух таблиц на листе
-        table2 = df.loc[:, 'Country Name':'Population']
+        table2 = df.loc[:, 'Country Name':'Value added']
         table1 = pd.merge(table1, table2, left_on=['COUNTRY'], right_on=['Country Name'], how='left')  # Аналог ВПР
         table1.drop(['Country Name'], axis='columns', inplace=True)  # Удаляем лишний столбец
         # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
@@ -253,7 +254,7 @@ vlookup()
 print('Объединение таблиц выполнено')
 
 def specific_en_cons():
-    file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+    file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
     dfs = {
@@ -266,8 +267,8 @@ def specific_en_cons():
                             if_sheet_exists="overlay")  # Указываем writer библиотеки
     for k in dfs:
         df = dfs[k]  # Получаем лист из словаря dfs
-        table1 = df.loc[:, 'COUNTRY':'Population']  # Создаем датафрейм
-        table1['Specific energy consumption'] = (table1['Useful consumption'] / table1['Population'])
+        table1 = df.loc[:, 'COUNTRY':'Value added']  # Создаем датафрейм
+        table1['Specific energy consumption'] = (table1['Useful consumption'] / table1['Value added'])
         # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
         # print(df.keys())  # Печатаем названия первичных ключей (названия столбцов) в данном датафрейме
         table1.to_excel(writer, sheet_name=str(k), index=False, startcol=0)  # Записываем датафрейм в файл.
@@ -278,7 +279,7 @@ specific_en_cons()
 print('Удельное полезное энергопотребление посчитано')
 
 def total():
-    file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+    file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
     dfs = {
@@ -316,7 +317,7 @@ total()
 print('Общий лист сформирован')
 
 def normalize():
-    file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+    file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
     df = []
@@ -356,7 +357,7 @@ normalize()
 print('Значения в общем листе отнормированы')
 
 def plot():
-    file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+    file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
 
     df = openpyxl.load_workbook(file)  # Читаем файл
     sheet = df['Total']  # Выбираем нужный лист
