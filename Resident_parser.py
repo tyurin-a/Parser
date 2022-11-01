@@ -36,10 +36,10 @@ def parser_flow():
                             if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
     # Запись данных
     country = df.loc[df['PRODUCT'] == resources[0], 'COUNTRY']  # Отбор нужных столбцов
-    for i in range(0, 6, 1):
+    for i in trange(0, 6, 1):
         df1 = df[(df['PRODUCT'] == resources[i])]
         # Фильтрация данных
-        for k in trange(int(start_year), int(end_year) + 1, 1):
+        for k in range(int(start_year), int(end_year) + 1, 1):
             data = (df1[str(k)])  # Отбор нужных столбцов
             data.name = resources[i]  # Переименовываем столбец (rename не работает, т.к. здесь он всего один)
             # Запись в новый Excel-файл
@@ -90,6 +90,7 @@ def remove_symb():
         for i in range(0, 6, 1):
             df.loc[df[resources[i]] == 'x', resources[i]] = 0
             df.loc[df[resources[i]] == '..', resources[i]] = 0
+            #df.loc[df[resources[i]] == 0, resources[i]] = ''
         # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
         # print(df.keys())  # Печатаем названия первичных ключей (названия столбцов) в данном датафрейме
         df.to_excel(writer, sheet_name=str(k), index=False, startcol=0)  # Записываем датафрейм в файл.

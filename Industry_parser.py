@@ -36,10 +36,10 @@ def parser_flow():
                             if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
     # Запись данных
     country = df.loc[df['PRODUCT'] == resources[0], 'COUNTRY']  # Отбор нужных столбцов
-    for i in range(0, 5, 1):
+    for i in trange(0, 5, 1):
         df1 = df[(df['PRODUCT'] == resources[i])]
         # Фильтрация данных
-        for k in trange(int(start_year), int(end_year) + 1, 1):
+        for k in range(int(start_year), int(end_year) + 1, 1):
             data = (df1[str(k)])  # Отбор нужных столбцов
             data.name = resources[i]  # Переименовываем столбец (rename не работает, т.к. здесь он всего один)
             # Запись в новый Excel-файл
