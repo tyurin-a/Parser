@@ -344,15 +344,15 @@ def normalize():
     df2 = df.loc[:, start_year:end_year]
     df1.to_excel(writer, sheet_name='Total', index=False,
                  startcol=31)  # Записываем столбец с максимальным значением в файл.
-    country.to_excel(writer, sheet_name='Total', index=False,
-                     startcol=33)  # Записываем столбец стран для нормированной таблицы.
+    country.to_excel(writer, sheet_name='Normal', index=False,
+                     startcol=0)  # Записываем столбец стран для нормированной таблицы.
 
     # Нормируем таблицу на максимальное значение
     for i in trange(0, 160):
         val = df2.iloc[i]  # Выбираем строку значений из df2
         max_val = df1.iloc[i]  # Выбираем строку значений из df1 (максимальное значение)
         df2.iloc[i] = val / max_val
-        df2.to_excel(writer, sheet_name='Total', index=False, startcol=34)
+        df2.to_excel(writer, sheet_name='Normal', index=False, startcol=1)
 
     writer.save()  # Сохраняем результат
 
@@ -363,18 +363,18 @@ def plot():
     file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
 
     df = openpyxl.load_workbook(file)  # Читаем файл
-    sheet = df['Total']  # Выбираем нужный лист
+    sheet = df['Normal']  # Выбираем нужный лист
 
     chart = LineChart()  # Создаем объект LineChart
 
     # countries = Reference(sheet, min_col=34, max_col=34, min_row=2, max_row=159)
-    years = Reference(sheet, min_col=35, max_col=64, min_row=1,
+    years = Reference(sheet, min_col=2, max_col=31, min_row=1,
                       max_row=1)  # Подаем список годов, по которому будет определяться ось х на графике
     # data = Reference(sheet, min_col=35, max_col=64, min_row=2, max_row=159)
     # Записываем легенду графика, а также определяем данные, по которым строится сам график
     for i in range(2, 160):
         chart.series.append(
-            Series(Reference(sheet, min_col=35, max_col=64, min_row=i, max_row=i), title=sheet.cell(i, 34).value))
+            Series(Reference(sheet, min_col=2, max_col=31, min_row=i, max_row=i), title=sheet.cell(i, 1).value))
     # chart.add_data(data, from_rows=True)
     chart.set_categories(years)  # Указываем, какой должна быть ось х на графике
     chart.width = 30  # Ширина и высота графика (в см)
@@ -394,7 +394,8 @@ def group_by():
 
     }
 
-    dfs = xl.parse(sheet_name='Total', skiprows=0)  # Парсим лист эксель-файла
+    dfs = xl.parse(sheet_name='Normal', skiprows=0)  # Парсим лист эксель-файла
+
     xl.close()  # Закрываем читаемый файл
 
     if os.path.exists(file_to_parse):
@@ -430,7 +431,7 @@ def group_by():
                     'Togo', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Ukraine',
                     'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan',
                     'Bolivarian Republic of Venezuela', 'Viet Nam', 'Yemen', 'Zambia', 'Zimbabwe']
-    group_list = [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, 2.0, 5.0, 5.0, 6.0, 3.0, 3.0, 6.0,
+    group_list = [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, 4.0, 2.0, 5.0, 5.0, 6.0, 3.0, 3.0, 6.0,
                   5.0, 1.0, 4.0, 3.0, 2.0, 5.0, 5.0, 1.0, 5.0, 1.0, 4.0, 2.0, 5.0, 4.0, 1.0, 4.0, 3.0, 2.0, 5.0, 4.0,
                   3.0, 4.0, nan, 4.0, 4.0, nan, 4.0, 4.0, 3.0, 5.0, 3.0, 1.0, 4.0, nan, 4.0, 4.0, 3.0, 3.0, 2.0, 2.0,
                   3.0, 4.0, nan, 5.0, 1.0, 4.0, 2.0, 3.0, 4.0, 4.0, 3.0, 3.0, 5.0, 2.0, 4.0, 4.0, 5.0, 5.0, 5.0, 3.0,
@@ -445,10 +446,9 @@ def group_by():
     table = pd.merge(table, cn, left_on=['COUNTRY'], right_on=['Страна'],
                      how='left')
     table.drop(['Страна'], axis='columns', inplace=True)
-    table1 = table['Группа']
     # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
     # print(df.keys())  # Печатаем названия первичных ключей (названия столбцов) в данном датафрейме
-    table1.to_excel(writer, sheet_name='Total', index=False, startcol=64)
+    table.to_excel(writer, sheet_name='Normal', index=False, startcol=0)
     # index=False отключает запись индексов, startcol=1 начианет запись с 1 стобца (нумерация с нуля).
     writer.save()  # Сохраняем результат
 
@@ -456,3 +456,37 @@ group_by()
 
 print('Страновые группы присвоены')
 
+def sort():
+    file = r'C:\Users\Артем\Desktop\Industry consumption.xlsx'
+    xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
+    # print(xl.sheet_names) # Печатаем названия листов в данном файле
+    dfs = {
+
+    }  # Словарь, в который выгружаем эксель-файл
+    dfs = xl.parse(sheet_name='Normal', skiprows=0)  # Парсим листы эксель-файла
+    # dfs.drop(dfs.columns[0:33], axis=1, inplace=True)
+    xl.close()  # Закрываем читаемый файл
+
+    if os.path.exists(file_to_parse):
+        mode = "a"
+        if_sheet_exists = "overlay"
+    else:
+        mode = "w"
+        if_sheet_exists = None
+    writer = pd.ExcelWriter(file_to_parse, engine='openpyxl', mode=mode,
+                            if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
+
+    for k in range(1, 7, 1):
+        df = dfs.loc[dfs['Группа'] == k]
+        if k == 1:
+            i = 0
+        else:
+            df1 = dfs.loc[dfs['Группа'] == k - 1]
+            i += (df1[df1.columns[0]].count() + 3)
+        df.to_excel(writer, sheet_name='Sort', index=False, startcol=0, startrow=i)
+
+    writer.save()
+
+sort()
+
+print('Страны отсортированы')
