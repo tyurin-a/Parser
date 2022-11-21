@@ -166,8 +166,8 @@ def useful_cons():
                             if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
     for k in dfs:
         df = dfs[k]  # Получаем лист из словаря dfs
-        df['Useful consumption'] = ((df['Electricity'] + df['Natural gas'] + df['Coal and coal products']) * 0.35 +
-                                    (df['Oil products'] + df['Heat']) * 0.9)
+        df['Useful consumption'] = ((df['Oil products'] + df['Natural gas'] + df['Coal and coal products']) * 0.35 +
+                                    (df['Electricity'] + df['Heat']) * 0.9)
         df1 = df['Useful consumption']
         # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
         # print(df.keys())  # Печатаем названия первичных ключей (названия столбцов) в данном датафрейме
