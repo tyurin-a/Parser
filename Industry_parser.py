@@ -302,6 +302,7 @@ def share_of_resources():
 
     for k in dfs:
         df = dfs[k]  # Получаем лист из словаря dfs
+        country = df['COUNTRY']
         df['Coal and coal products (%)'] = df['Coal and coal products'] * 0.35 / df['Useful consumption']
         df['Oil products (%)'] = df['Oil products'] * 0.35 / df['Useful consumption']
         df['Natural gas (%)'] = df['Natural gas'] * 0.35 / df['Useful consumption']
@@ -310,7 +311,8 @@ def share_of_resources():
         # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
         # print(df.keys())  # Печатаем названия первичных ключей (названия столбцов) в данном датафрейме
         df1 = df[['Coal and coal products (%)', 'Oil products (%)', 'Natural gas (%)', 'Electricity (%)', 'Heat (%)']]
-        df1.to_excel(writer, sheet_name=str(k), index=False, startcol=13)  # Записываем датафрейм в файл.
+        df1.to_excel(writer, sheet_name=str(k), index=False, startcol=14)  # Записываем датафрейм в файл.
+        country.to_excel(writer, sheet_name=str(k), index=False, startcol=13)
         if k == '2019':
             break
     # index=False отключает запись индексов, startcol=1 начианет запись с 1 стобца (нумерация с нуля).
