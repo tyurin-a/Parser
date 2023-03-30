@@ -3,6 +3,7 @@ import os.path
 import pandas as pd
 from tqdm import trange
 import numpy as np
+from numpy import nan
 import openpyxl
 from openpyxl import load_workbook
 from openpyxl.chart import Reference, BarChart, LineChart, Series
@@ -163,9 +164,8 @@ def useful_cons():
                             if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
     for k in dfs:
         df = dfs[k]  # Получаем лист из словаря dfs
-        df['Useful consumption'] = ((df['Electricity'] + df['Natural gas'] + df['Coal and coal products']) * 0.35 +
-                                    df['Biofuels and waste'] * 0.25 +
-                                    (df['Oil products'] + df['Heat']) * 0.9)
+        df['Useful consumption'] = ((df['Oil products'] + df['Natural gas'] + df['Coal and coal products'] + df['Biofuels and waste']) * 0.35 +
+                                    (df['Electricity'] + df['Heat']) * 0.9)
         df1 = df['Useful consumption']
         # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
         # print(df.keys())  # Печатаем названия первичных ключей (названия столбцов) в данном датафрейме
@@ -342,15 +342,15 @@ def normalize():
     df2 = df.loc[:, start_year:end_year]
     df1.to_excel(writer, sheet_name='Total', index=False,
                  startcol=31)  # Записываем столбец с максимальным значением в файл.
-    country.to_excel(writer, sheet_name='Total', index=False,
-                     startcol=33)  # Записываем столбец стран для нормированной таблицы.
+    country.to_excel(writer, sheet_name='Normal', index=False,
+                     startcol=0)  # Записываем столбец стран для нормированной таблицы.
 
     # Нормируем таблицу на максимальное значение
     for i in trange(0, 160):
         val = df2.iloc[i]  # Выбираем строку значений из df2
         max_val = df1.iloc[i]  # Выбираем строку значений из df1 (максимальное значение)
         df2.iloc[i] = val / max_val
-        df2.to_excel(writer, sheet_name='Total', index=False, startcol=34)
+        df2.to_excel(writer, sheet_name='Normal', index=False, startcol=1)
 
     writer.save()  # Сохраняем результат
 
@@ -361,18 +361,18 @@ def plot():
     file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
 
     df = openpyxl.load_workbook(file)  # Читаем файл
-    sheet = df['Total']  # Выбираем нужный лист
+    sheet = df['Normal']  # Выбираем нужный лист
 
     chart = LineChart()  # Создаем объект LineChart
 
     # countries = Reference(sheet, min_col=34, max_col=34, min_row=2, max_row=159)
-    years = Reference(sheet, min_col=35, max_col=64, min_row=1,
+    years = Reference(sheet, min_col=2, max_col=31, min_row=1,
                       max_row=1)  # Подаем список годов, по которому будет определяться ось х на графике
     # data = Reference(sheet, min_col=35, max_col=64, min_row=2, max_row=159)
     # Записываем легенду графика, а также определяем данные, по которым строится сам график
     for i in range(2, 160):
         chart.series.append(
-            Series(Reference(sheet, min_col=35, max_col=64, min_row=i, max_row=i), title=sheet.cell(i, 34).value))
+            Series(Reference(sheet, min_col=2, max_col=31, min_row=i, max_row=i), title=sheet.cell(i, 1).value))
     # chart.add_data(data, from_rows=True)
     chart.set_categories(years)  # Указываем, какой должна быть ось х на графике
     chart.width = 30  # Ширина и высота графика (в см)
@@ -383,3 +383,108 @@ def plot():
 
 plot()
 print('Общий график (без разбиения стран на группы) построен')
+
+def group_by():
+    file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+    xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
+    # print(xl.sheet_names) # Печатаем названия листов в данном файле
+    dfs = {
+
+    }
+
+    dfs = xl.parse(sheet_name='Normal', skiprows=0)  # Парсим лист эксель-файла
+
+    xl.close()  # Закрываем читаемый файл
+
+    if os.path.exists(file_to_parse):
+        mode = "a"
+        if_sheet_exists = "overlay"
+    else:
+        mode = "w"
+        if_sheet_exists = None
+    writer = pd.ExcelWriter(file_to_parse, engine='openpyxl', mode=mode,
+                            if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
+    country_list = ['World', 'OECD Americas', 'OECD Asia Oceania', 'OECD Europe', 'Africa', 'Non-OECD Americas',
+                    'Middle East', 'Non-OECD Europe and Eurasia', 'Non-OECD Asia (excluding China)',
+                    'China (P.R. of China and Hong Kong, China)', 'World marine bunkers', 'World aviation bunkers',
+                    'Albania', 'Algeria', 'Angola', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan',
+                    'Bahrain', 'Bangladesh', 'Belarus', 'Belgium', 'Benin', 'Plurinational State of Bolivia',
+                    'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei Darussalam', 'Bulgaria', 'Cambodia',
+                    'Cameroon', 'Canada', 'Chile', "People's Republic of China", 'Colombia', 'Republic of the Congo',
+                    'Costa Rica', "Cфte d'Ivoire", 'Croatia', 'Cuba', 'Curaзao/Netherlands Antilles', 'Cyprus',
+                    'Czech Republic', "Democratic People's Republic of Korea", 'Democratic Republic of the Congo',
+                    'Denmark', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea',
+                    'Estonia', 'Ethiopia', 'Finland', 'France', 'Gabon', 'Georgia', 'Germany', 'Ghana', 'Gibraltar',
+                    'Greece', 'Guatemala', 'Guyana', 'Haiti', 'Honduras', 'Hong Kong (China)', 'Hungary', 'Iceland',
+                    'India', 'Indonesia', 'Islamic Republic of Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Jamaica',
+                    'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Korea', 'Kosovo', 'Kuwait', 'Kyrgyzstan',
+                    "Lao People's Democratic Republic", 'Latvia', 'Lebanon', 'Libya', 'Lithuania', 'Luxembourg',
+                    'Malaysia', 'Malta', 'Mauritius', 'Mexico', 'Republic of Moldova', 'Mongolia', 'Montenegro',
+                    'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua',
+                    'Niger', 'Nigeria', 'Republic of North Macedonia', 'Norway', 'Oman', 'Pakistan', 'Panama',
+                    'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russian Federation',
+                    'Saudi Arabia', 'Senegal', 'Serbia', 'Singapore', 'Slovak Republic', 'Slovenia', 'South Africa',
+                    'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Sweden', 'Switzerland',
+                    'Syrian Arab Republic', 'Chinese Taipei', 'Tajikistan', 'United Republic of Tanzania', 'Thailand',
+                    'Togo', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Ukraine',
+                    'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan',
+                    'Bolivarian Republic of Venezuela', 'Viet Nam', 'Yemen', 'Zambia', 'Zimbabwe']
+    group_list = [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, 4.0, 2.0, 5.0, 5.0, 6.0, 3.0, 3.0, 6.0,
+                  5.0, 1.0, 4.0, 3.0, 2.0, 5.0, 5.0, 1.0, 5.0, 1.0, 4.0, 2.0, 5.0, 4.0, 1.0, 4.0, 3.0, 2.0, 5.0, 4.0,
+                  3.0, 4.0, nan, 4.0, 4.0, nan, 4.0, 4.0, 3.0, 5.0, 3.0, 1.0, 4.0, nan, 4.0, 4.0, 3.0, 3.0, 2.0, 2.0,
+                  3.0, 4.0, nan, 5.0, 1.0, 4.0, 2.0, 3.0, 4.0, 4.0, 3.0, 3.0, 5.0, 2.0, 4.0, 4.0, 5.0, 5.0, 5.0, 3.0,
+                  4.0, 4.0, 5.0, 4.0, 3.0, 5.0, 4.0, nan, 4.0, 2.0, nan, 4.0, 4.0, 5.0, 4.0, 3.0, 5.0, 3.0, 4.0, 4.0,
+                  3.0, 4.0, 4.0, 5.0, 2.0, 3.0, 4.0, 4.0, 2.0, 1.0, 4.0, 3.0, 2.0, 5.0, 4.0, 1.0, 5.0, 3.0, 4.0, 5.0,
+                  4.0, 4.0, 6.0, 2.0, 4.0, 4.0, 2.0, 4.0, 3.0, 5.0, 2.0, 5.0, 4.0, 5.0, 4.0, 4.0, 3.0, 1.0, nan, 6.0,
+                  3.0, nan, 4.0, 3.0, 5.0, 4.0, nan, 6.0, 5.0, 3.0, 4.0, 1.0, 6.0, nan, nan, 2.0, 4.0, 4.0]
+    cn = pd.DataFrame(list(zip(country_list, group_list)), columns=['Страна', 'Группа'])  # Создаем датафрейм из списков
+    # print(cn)
+    df = dfs  # Получаем лист из словаря dfs
+    table = df.loc[:, 'COUNTRY':'2019']
+    table = pd.merge(table, cn, left_on=['COUNTRY'], right_on=['Страна'],
+                     how='left')
+    table.drop(['Страна'], axis='columns', inplace=True)
+    # print(df1.name)  # Печатаем названия первичных ключей (названия столбцов) в данном массиве (не в датафрейме)
+    # print(df.keys())  # Печатаем названия первичных ключей (названия столбцов) в данном датафрейме
+    table.to_excel(writer, sheet_name='Normal', index=False, startcol=0)
+    # index=False отключает запись индексов, startcol=1 начианет запись с 1 стобца (нумерация с нуля).
+    writer.save()  # Сохраняем результат
+
+group_by()
+
+print('Страновые группы присвоены')
+
+def sort():
+    file = r'C:\Users\Артем\Desktop\Residential consumption.xlsx'
+    xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
+    # print(xl.sheet_names) # Печатаем названия листов в данном файле
+    dfs = {
+
+    }  # Словарь, в который выгружаем эксель-файл
+    dfs = xl.parse(sheet_name='Normal', skiprows=0)  # Парсим листы эксель-файла
+    # dfs.drop(dfs.columns[0:33], axis=1, inplace=True)
+    xl.close()  # Закрываем читаемый файл
+
+    if os.path.exists(file_to_parse):
+        mode = "a"
+        if_sheet_exists = "overlay"
+    else:
+        mode = "w"
+        if_sheet_exists = None
+    writer = pd.ExcelWriter(file_to_parse, engine='openpyxl', mode=mode,
+                            if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
+
+    for k in range(1, 7, 1):
+        df = dfs.loc[dfs['Группа'] == k]
+        if k == 1:
+            i = 0
+        else:
+            df1 = dfs.loc[dfs['Группа'] == k - 1]
+            i += (df1[df1.columns[0]].count() + 3)
+        df.to_excel(writer, sheet_name='Sort', index=False, startcol=0, startrow=i)
+
+    writer.save()
+
+sort()
+
+print('Страны отсортированы')
