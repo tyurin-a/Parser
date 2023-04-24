@@ -199,7 +199,7 @@ def change_keys():
                             if_sheet_exists=if_sheet_exists)  # Указываем writer библиотеки
     country_dict = {"China": "People's Republic of China", "Bolivia": "Plurinational State of Bolivia", "Congo, Rep.": "Republic of the Congo", "Congo, Dem. Rep.": "Democratic Republic of the Congo", "Cote d'Ivoire" : "Cфte d'Ivoire", "Curacao": "Curaзao/Netherlands Antilles", "Korea, Dem. People's Rep.": "Democratic People's Republic of Korea",
                     "Egypt, Arab Rep.": "Egypt", "Hong Kong SAR, China": "Hong Kong (China)", "Iran, Islamic Rep.": "Islamic Republic of Iran", "Korea, Rep.": "Korea", "Kyrgyz Republic": "Kyrgyzstan", "Lao PDR": "Lao People's Democratic Republic", "Moldova": "Republic of Moldova", "North Macedonia": "Republic of North Macedonia", "Tanzania": "United Republic of Tanzania",
-                    "Turkiye": "Turkey", "Venezuela, RB": "Bolivarian Republic of Venezuela", "Vietnam": "Viet Nam", "Yemen, Rep.": "Yemen"
+                    "Turkiye": "Turkey", "Venezuela, RB": "Bolivarian Republic of Venezuela", "Vietnam": "Viet Nam", "Yemen, Rep.": "Yemen", "European Union" : "Memo: European Union-27"
                     }  # Словарь сравнительной таблицы
 
     cn = pd.DataFrame(list(country_dict.items()), columns=['TableWB', 'TableIEA'])  # Создаем датафрейм из словаря
@@ -388,7 +388,7 @@ def normalize():
                      startcol=0)  # Записываем столбец стран для нормированной таблицы.
 
     # Нормируем таблицу на максимальное значение
-    for i in trange(0, 160):
+    for i in trange(0, 190):
         val = df2.iloc[i]  # Выбираем строку значений из df2
         max_val = df1.iloc[i]  # Выбираем строку значений из df1 (максимальное значение)
         df2.iloc[i] = val / max_val
@@ -412,7 +412,7 @@ def plot():
                       max_row=1)  # Подаем список годов, по которому будет определяться ось х на графике
     # data = Reference(sheet, min_col=35, max_col=64, min_row=2, max_row=159)
     # Записываем легенду графика, а также определяем данные, по которым строится сам график
-    for i in range(2, 160):
+    for i in range(2, 192):
         chart.series.append(
             Series(Reference(sheet, min_col=2, max_col=31, min_row=i, max_row=i), title=sheet.cell(i, 1).value))
     # chart.add_data(data, from_rows=True)
@@ -470,7 +470,7 @@ def group_by():
                     'Syrian Arab Republic', 'Chinese Taipei', 'Tajikistan', 'United Republic of Tanzania', 'Thailand',
                     'Togo', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Ukraine',
                     'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan',
-                    'Bolivarian Republic of Venezuela', 'Viet Nam', 'Yemen', 'Zambia', 'Zimbabwe']
+                    'Bolivarian Republic of Venezuela', 'Viet Nam', 'Yemen', 'Zambia', 'Zimbabwe', 'Memo: European Union-27']
     group_list = [nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, nan, 4.0, 2.0, 5.0, 5.0, 6.0, 3.0, 3.0, 6.0,
                   5.0, 1.0, 4.0, 3.0, 2.0, 5.0, 5.0, 1.0, 5.0, 1.0, 4.0, 2.0, 5.0, 4.0, 1.0, 4.0, 3.0, 2.0, 5.0, 4.0,
                   3.0, 4.0, nan, 4.0, 4.0, nan, 4.0, 4.0, 3.0, 5.0, 3.0, 1.0, 4.0, nan, 4.0, 4.0, 3.0, 3.0, 2.0, 2.0,
@@ -478,7 +478,7 @@ def group_by():
                   4.0, 4.0, 5.0, 4.0, 3.0, 5.0, 4.0, nan, 4.0, 2.0, nan, 4.0, 4.0, 5.0, 4.0, 3.0, 5.0, 3.0, 4.0, 4.0,
                   3.0, 4.0, 4.0, 5.0, 2.0, 3.0, 4.0, 4.0, 2.0, 1.0, 4.0, 3.0, 2.0, 5.0, 4.0, 1.0, 5.0, 3.0, 4.0, 5.0,
                   4.0, 4.0, 6.0, 2.0, 4.0, 4.0, 2.0, 4.0, 3.0, 5.0, 2.0, 5.0, 4.0, 5.0, 4.0, 4.0, 3.0, 1.0, nan, 6.0,
-                  3.0, nan, 4.0, 3.0, 5.0, 4.0, nan, 6.0, 5.0, 3.0, 4.0, 1.0, 6.0, nan, nan, 2.0, 4.0, 4.0]
+                  3.0, nan, 4.0, 3.0, 5.0, 4.0, nan, 6.0, 5.0, 3.0, 4.0, 1.0, 6.0, nan, nan, 2.0, 4.0, 4.0, 3.0]
     cn = pd.DataFrame(list(zip(country_list, group_list)), columns=['Страна', 'Группа'])  # Создаем датафрейм из списков
     # print(cn)
     df = dfs  # Получаем лист из словаря dfs
