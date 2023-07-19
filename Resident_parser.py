@@ -453,7 +453,7 @@ def group_by():
 #group_by()
 
 def group_by_new():
-    file_group = r'C:\Users\Артем\Desktop\Group_keys_residential.xlsx'
+    file_group = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\Resident\Group_keys_residential.xlsx'
     xl = pd.ExcelFile(file_group)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
     df_group = {
