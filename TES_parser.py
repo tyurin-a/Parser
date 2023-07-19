@@ -18,7 +18,7 @@ resources = ['Coal and coal products', 'Peat and peat products', 'Oil shale and 
 
 def parser_flow():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
-    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\TES IEA.xlsx'
+    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\Total energy supply\TES IEA.xlsx'
 
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
@@ -108,7 +108,7 @@ print('Нечисловые символы в таблице удалены')
 def parser_gdp():
     # Задаем стартовые параметры для парсинга и фильтрации (начальный и конечный года, энергоресурсы, отрасль и путь к файлу)
 
-    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\GDP (constant 2015 USD) World Bank.xlsx'
+    file = r'C:\Users\Артем\Desktop\МФТИ\Магистратура\Диплом_Магистр\Total energy supply\GDP (constant 2015 USD) World Bank.xlsx'
 
     xl = pd.ExcelFile(file)  # Загружаем spreadsheet (электронную таблицу) в объект pandas
     # print(xl.sheet_names) # Печатаем названия листов в данном файле
